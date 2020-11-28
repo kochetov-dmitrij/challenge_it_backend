@@ -3,3 +3,6 @@
 
 # Bin
 echo_server/echo_server
+
+# Generated files
+docs/
