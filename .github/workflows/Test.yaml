@@ -1,0 +1,35 @@
+name: Test
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    name: Test
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Set up Go 1.15
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.15
+
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v2
+
+      - name: Generate docs
+        run: |
+          go get github.com/swaggo/swag/cmd/swag
+          swag init -d echo_server --output docs/echo_server
+
+      - name: Get dependencies
+        run: |
+          go mod tidy
+
+      - name: Build
+        working-directory: echo_server
+        run: go build
+
+      - name: Test
+        working-directory: echo_server
+        run: go test

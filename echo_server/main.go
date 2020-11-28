@@ -5,6 +5,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	echoSwagger "github.com/swaggo/echo-swagger"
+	"os"
 )
 
 // @title Echo Swagger Example API
@@ -36,5 +37,9 @@ func main() {
 	e.GET("/swagger/*", echoSwagger.WrapHandler)
 
 	// Start server
-	e.Logger.Fatal(e.Start(":3000"))
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "3000"
+	}
+	e.Logger.Fatal(e.Start(":" + port))
 }
