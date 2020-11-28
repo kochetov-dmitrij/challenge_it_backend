@@ -1,1 +1,5 @@
+# GoLand
 .idea/
+
+# Bin
+echo_server/echo_server
