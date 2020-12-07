@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/kochetov-dmitrij/challenge_it_backend/database"
 	_ "github.com/kochetov-dmitrij/challenge_it_backend/docs/echo_server"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -24,6 +25,10 @@ import (
 // @BasePath /
 // @schemes http
 func main() {
+	// Init db
+	db := database.InitDB()
+	_ = db
+
 	// Echo instance
 	e := echo.New()
 
