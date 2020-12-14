@@ -115,6 +115,42 @@ func Login(c echo.Context) error {
 	})
 }
 
+func RejectChallenge(c echo.Context) error {
+	challenge, err := strconv.Atoi(c.QueryParam("challenge"))
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "Invalid challenge")
+	}
+	user := c.Get("user").(*jwt.Token)
+	claims := user.Claims.(*jwtCustomClaims)
+	mychallenge := db.UserChallenge{
+		Id: int32(challenge),
+	}
+	_, err = database.Model(&mychallenge).Set("status = ?", db.Rejected).Where("user_id = ?", claims.UserId).Where("id = ?", challenge).Update()
+	if err != nil {
+		log.Error(err)
+		return echo.NewHTTPError(http.StatusInternalServerError, "Something goes wrong")
+	}
+	return c.String(http.StatusOK, "Rejected")
+}
+
+func CompleteChallenge(c echo.Context) error {
+	challenge, err := strconv.Atoi(c.QueryParam("challenge"))
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "Invalid challenge")
+	}
+	user := c.Get("user").(*jwt.Token)
+	claims := user.Claims.(*jwtCustomClaims)
+	mychallenge := db.UserChallenge{
+		Id: int32(challenge),
+	}
+	_, err = database.Model(&mychallenge).Set("status = ?", db.Completed).Where("user_id = ?", claims.UserId).Where("id = ?", challenge).Update()
+	if err != nil {
+		log.Error(err)
+		return echo.NewHTTPError(http.StatusInternalServerError, "Something goes wrong")
+	}
+	return c.String(http.StatusOK, "Completed")
+}
+
 func TakeChallenge(c echo.Context) error {
 	challenge, err := strconv.Atoi(c.QueryParam("challenge"))
 	if err != nil {

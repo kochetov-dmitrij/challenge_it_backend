@@ -67,6 +67,9 @@ func main() {
 	r.GET("/my", MyChallenges)
 	r.GET("/all", AllChallenges)
 
+	r.GET("/completed", CompleteChallenge)
+	r.GET("/reject", RejectChallenge)
+
 	// Start server
 	port := os.Getenv("PORT")
 	if port == "" {
