@@ -8,7 +8,7 @@ type User struct {
 	Id          int32  `pg:",pk"`
 	Name        string `pg:"type:varchar(50),notnull"`
 	Email       string `pg:"type:varchar(50),notnull"`
-	EncPassword string `pg:"type:varchar(50),notnull"`
+	EncPassword string `pg:"type:varchar(64),notnull"`
 }
 
 type Challenge struct {
@@ -18,8 +18,8 @@ type Challenge struct {
 	Author       *User  `pg:"rel:has-one"`
 	Description  string `pg:"type:text"`
 	Requirements string `pg:"type:text"`
-	Rating       int32  `pg:",notnull"`
-	Taken        int32  `pg:",notnull"`
+	Rating       int32  `pg:""`
+	Taken        int32  `pg:""`
 }
 
 const (
@@ -33,6 +33,8 @@ type UserChallenge struct {
 	Id                int32     `pg:",pk"`
 	UserId            int32     `pg:",notnull"`
 	User              *User     `pg:"rel:has-one"`
+	ChallengeId int32      `pg:",notnull"`
+	Challenge   *Challenge `pg:"rel:has-one"`
 	StartDate         time.Time `pg:",notnull"`
 	Comment           string    `pg:"type:text"`
 	Status            int32     `pg:",notnull"`
