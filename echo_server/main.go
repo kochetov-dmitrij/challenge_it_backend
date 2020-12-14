@@ -1,13 +1,20 @@
 package main
 
 import (
-	"github.com/kochetov-dmitrij/challenge_it_backend/database"
+	"github.com/dgrijalva/jwt-go"
+	db "github.com/kochetov-dmitrij/challenge_it_backend/database"
 	_ "github.com/kochetov-dmitrij/challenge_it_backend/docs/echo_server"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	echoSwagger "github.com/swaggo/echo-swagger"
 	"os"
 )
+
+type jwtCustomClaims struct {
+	Name  string `json:"name"`
+	UserId int32   `json:"uid"`
+	jwt.StandardClaims
+}
 
 // @title Echo Swagger Example API
 // @version 1.0
@@ -26,8 +33,7 @@ import (
 // @schemes http
 func main() {
 	// Init db
-	db := database.InitDB()
-	_ = db
+	_ = db.InitDB()
 
 	// Echo instance
 	e := echo.New()
@@ -40,6 +46,25 @@ func main() {
 	// Routes
 	e.GET("/", HealthCheck)
 	e.GET("/swagger/*", echoSwagger.WrapHandler)
+
+	// Auth
+	e.POST("/login", Login)
+	e.POST("/register", Register)
+
+	r := e.Group("/challenge")
+
+	// Configure middleware with the custom claims type
+	config := middleware.JWTConfig{
+		Claims:     &jwtCustomClaims{},
+		SigningKey: []byte("secret"),
+	}
+
+	r.Use(middleware.JWTWithConfig(config))
+
+	r.POST("/new", NewChallenge)
+	r.GET("/take", TakeChallenge)
+	r.GET("/my", MyChallenges)
+	r.GET("/all", AllChallenges)
 
 	// Start server
 	port := os.Getenv("PORT")
