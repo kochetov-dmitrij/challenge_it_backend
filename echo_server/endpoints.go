@@ -17,7 +17,7 @@ import (
 
 var database *pg.DB
 
-const SECRET string = "secret"
+const SECRET string = "secret" // TODO: change to env
 
 // HealthCheck godoc
 // @Summary Show the status of server.
@@ -151,6 +151,18 @@ func NewChallenge(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Something goes wrong")
 	}
 	return c.String(http.StatusCreated, "Added")
+}
+
+func CreatedChallenges(c echo.Context) error {
+	user := c.Get("user").(*jwt.Token)
+	claims := user.Claims.(*jwtCustomClaims)
+	var challenges []db.Challenge
+	err := database.Model(&challenges).Where("challenge.author_id = ?", claims.UserId).Select()
+	if err != nil {
+		log.Error(err)
+		return echo.NewHTTPError(http.StatusInternalServerError, "Something goes wrong")
+	}
+	return c.JSON(http.StatusOK, map[string]interface{}{"challenges": challenges})
 }
 
 func MyChallenges(c echo.Context) error {

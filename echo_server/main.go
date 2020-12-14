@@ -11,8 +11,8 @@ import (
 )
 
 type jwtCustomClaims struct {
-	Name  string `json:"name"`
-	UserId int32   `json:"uid"`
+	Name   string `json:"name"`
+	UserId int32  `json:"uid"`
 	jwt.StandardClaims
 }
 
@@ -62,6 +62,7 @@ func main() {
 	r.Use(middleware.JWTWithConfig(config))
 
 	r.POST("/new", NewChallenge)
+	r.GET("/created", CreatedChallenges)
 	r.GET("/take", TakeChallenge)
 	r.GET("/my", MyChallenges)
 	r.GET("/all", AllChallenges)
